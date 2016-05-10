@@ -26,7 +26,10 @@ int noext = 0 ;
      It means that finding 20% chances in entity area .
      It also can be set to three threshold for plants , herbs , and carns . 
 */
+/* error : initializer element is not a compile-time constant . 
 int threshold = (int)(height * width / 5) ;
+*/
+int threshold ;
 
 #define EMPTY 0
 #define PLANT 1
@@ -108,7 +111,7 @@ void init_herbs(void)
     j = random_range(0 , height);
     k = random_range(0 , width);
     
-    /* encount a plant , then eat it . */
+    /* if encount a plant , then eat it . */
     if(world[j][k].type == PLANT)
     {
       world[j][k].type = HERB ;
@@ -121,6 +124,30 @@ void init_herbs(void)
       world[j][k].energy = eh ;
     }
   } /* for(i = 0 ; i < herbs ; i++) */
+}
+
+void init_carns(void)
+{
+  int i , j , k ;
+
+  for(i = 0 ; i < carns ; i++)
+  {
+    j = random_range(0 , height);
+    k = random_range(0 , width);
+
+    /* if encount a herb , then eat it . */
+    if(world[j][k].type == HERB) {
+      world[j][k].type = CARN ;
+      /* energy of herb plus energy of carn */
+      world[j][k].energy += ec ;
+    }
+    else if (world[j][k].type == EMPTY) {
+      world[j][k].type = CARN ;
+      world[j][k].energy = ec ;
+    }
+
+  } /* for(i = 0 ; i < carns ; i++) */
+
 }
 
 void whilecount(void)
@@ -138,7 +165,13 @@ void whilecount(void)
 
 int main(int argc , char **argv)
 {
+  threshold = (int)(height * width / 5) ;
+
   init_world();
+  init_plants();
+  init_herbs();
+  init_carns();
+
   //whilecount();
   printf("gsw!\n");
   exit(1);
