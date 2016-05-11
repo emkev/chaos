@@ -36,6 +36,12 @@ typedef struct cell {
 
 cell **world ;
 
+/* array of eight directions */
+int neighs[8][2] = {
+  {-1 , -1} , {-1 , 0} , {-1 , 1} ,
+  {0 , -1 } ,            { 0 , 1} ,
+  {1 , -1 } , { 1 , 0} , { 1 , 1} 
+};
 
 int random_range(int min , int max)
 {
@@ -46,6 +52,7 @@ int random_range(int min , int max)
   return a ;
 }
 
+/* init plants , herbs , and carns */
 void init_world(void)
 {
   int  i , j , k ;
@@ -91,6 +98,81 @@ void init_world(void)
     }
   } /* for(i = 0 ; i < plants ; i++) */
 
+  /* add herbs */
+  for(i = 0 ; i < herbs ; i++)
+  {
+    do
+    {
+      j = random_range(0 , height);
+      k = random_range(0 , width);
+    } while(world[j][k].type != EMPTY) ;
+    world[j][k].type = HERB ;
+    world[j][k].energy = eh ;  
+  }
+
+  /* add carns */
+  for(i = 0 ; i < carns ; i++)
+  {
+    do
+    {
+      j = random_range(0 , height);
+      k = random_range(0 , width);
+    } while(world[j][k].type != EMPTY) ;
+    world[j][k].type = CARN ;
+    world[j][k].energy = ec ;
+  }
+
+}
+
+void update_plants(void)
+{
+  int i , j , ni , nj , nni , nnj , count ;
+
+  for(i = 0 ; i < height ; i++)
+  {
+    for(j = 0 ; j < width ; j++)
+    {
+      /* whether is for performance by this checking way . */
+      if(world[i][j].type != EMPTY) continue ;
+
+      count = 0 ;
+
+      /* record plants sum of eight directions of current location */
+      for(ni = -1 ; ni <= 1 ; ni++)
+      {
+        for(nj = -1 ; nj <= 1 ; nj++)
+	{
+          nni = (i + ni + height) % height ;
+          nnj = (j + nj + width) % width ;
+
+          if(world[nni][nnj].type == PLANT)
+            count++ ;
+
+	} /* for(nj = -1 ; ... */
+      } /* for(ni = -1 ; ... */
+
+      /* plants sum in allowed domain(pmin , pmax) , 
+         AND the energy of the location allow to grow a new plant . */
+      if(count >= pmin && count <= pmax && world[nni][nnj].energy >= pt)
+        world[i][j].type = NEWPLANT ;
+
+    } /* for(j = 0 ; j < width ; j++) */
+
+  } /* for(i = 0 ; i < height ; i++) */
+
+  for(i = 0 ; i < height ; i++)
+  {
+    for(j = 0 ; j < width ; j++)
+    {
+      if(world[i][j].type == NEWPLANT)
+        world[i][j].type = PLANT ;
+      /* if empty , energy++ to feed land . :-) */
+      else if (world[i][j].type == EMPTY)
+        world[i][j].energy++ ;
+
+    } /* for(j = 0 ; j < width ; ... */
+
+  } /* for(i = 0 ; i < height ; ... */
 }
 
 void whilecount(void)
