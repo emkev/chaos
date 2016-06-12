@@ -175,6 +175,49 @@ void update_plants(void)
   } /* for(i = 0 ; i < height ; ... */
 }
 
+void update_herbs(void)
+{
+  int i , j , ni , nj , k , r , found ;
+
+  for(i = 0 ; i < height ; i++)
+  {
+    for(j = 0 ; j < width ; j++)
+    {
+      /* always operate ~[][] , not easy . whether use pointer ! */
+      /* Don't know why use 'mark' in world[][] . */
+      if(world[i][j].type != HERB) continue ;
+
+      /* cost energy */
+      world[i][j].energy -= ch ;
+      if(world[i][j].energy <= 0)
+      {
+        world[i][j].type = EMPTY ;
+        world[i][j].energy = 0 ;
+        break;
+      }
+
+      found = 0 ;
+      /* by using r , to begin to rotate from random direction */
+      /* r = random_range(0 , 8); */
+      for(k = 0 ; k < 8 ; k++)
+      {
+        ni = (i + neighs[k][0] + height) % height ;
+        nj = (j + neighs[k][1] + width) % width ;
+
+        if(world[ni][nj].type == PLANT)
+	{
+          found = 1 ;
+          break;
+	} 
+      } /* for(k = 0 ; k < 8 ;  */
+
+      //if()
+
+    } /* for(j = 0 ; j < width ;  */
+  } /* for(i = 0 ; i < height ;  */ 
+}
+
+
 void whilecount(void)
 {
   int count = 0 ;
