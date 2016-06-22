@@ -5,6 +5,7 @@ simulating a ecosystem . Maybe it can be called chaos theory . Who knows !
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 int height = 5 , width = 10 , steps = 3 ;
 int plants = 10 , herbs = 4 , carns = 2 ;
@@ -211,7 +212,34 @@ void update_herbs(void)
 	} 
       } /* for(k = 0 ; k < 8 ;  */
 
-      //if()
+      /* if found , then eat */
+      if(found)
+      {
+        world[ni][nj].type = HERB ;
+        world[ni][nj].energy = world[i][j].energy + ep ;
+
+        /* make a baby if possible */
+        if(world[ni][nj].energy > eh)
+	{
+          world[ni][nj].energy /= 2 ;
+          world[i][j] = world[ni][nj] ;
+	}
+        /* move from old location [i,j] to the new [ni,nj] */
+        else
+	{
+          world[i][j].type = EMPTY ;
+          world[i][j].energy = 0 ;
+	}
+      } /* if(found) */
+      /* randomly move to a empty loaction */
+      else
+      {
+        r = random_range(0 , 8) ;
+        for(k = 0 ; k < 8 ; k++ , r = (r + 1) % 8)
+	{
+
+	}
+      }
 
     } /* for(j = 0 ; j < width ;  */
   } /* for(i = 0 ; i < height ;  */ 
@@ -231,10 +259,79 @@ void whilecount(void)
 
 }
 
-int main(int argc , char **argv)
+void random_wheel(int spos)
 {
-  init_world();
+  int r , j , k ;
+  int a , b , c ;
+
+  //r = random_range(0 , 8) ;
+
+  /* NOTE ! Loop beginning by r , not (r+1) . NOTE !  */
+
+  /*
+     r = (r + 1) % 8 , TO turn the wheel !
+     r = (r + 8) % 8 , FOR the edge question ! 
+   */
+
+  for(k = 0 , j = spos , r = j % 8 ; 
+      k < 8 ; 
+      k++ , r = (j + 1) % 8 , j++)
+  {
+    printf("j = %d " , j);
+    printf("r = %d\n" , r);
+  }
+
+  printf("\n");
+
+  c = spos % 8 ;
+  printf("turning c = %d\n" , c);
+  for(a = 0 ; a < 8 ; a++ , c = (c + 1) % 8 )
+  {
+    printf("c= %d\n" , c);
+  }
+
+}
+
+int main(int argc , char *argv[])
+{
+  int arglen , argnum , count ;
+  //init_world();
   //whilecount();
+
+  arglen = argnum = argc - 1 ;
+  count = 1 ;
+  printf("arglen = %d\n" , arglen);
+  
+  while(arglen > 0)
+  {
+    /* argv[count] is the first-address of multiple string-array-factors . */
+    printf("argue-%d = %s\n" , count , argv[count]);
+    arglen-- ;
+    count++ ;
+  }
+
+  printf("\n");
+
+  /* strncmp : string comparing function . 
+     if same , return 0 , 
+     if different , return >0 or <0 .
+   */
+
+  if(argnum == 2 && strncmp(argv[1], "wheel" , 5) == 0)
+  {
+    printf("wheel\n");
+    /* atoi , convert string to int (%d) . 
+       atol , convert string to long int (%ld) .
+     */
+    printf("%d\n" , atoi(argv[2]));
+    random_wheel(atoi(argv[2]));
+  }
+  
+  /* try to convert int to string by itoa() , but 
+     the function is not support in C standard library .
+    */
+  //printf("%s\n" , itoa(count));
+
   printf("gsw!\n");
   exit(1);
 }
