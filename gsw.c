@@ -7,7 +7,7 @@ simulating a ecosystem . Maybe it can be called chaos theory . Who knows !
 #include <stdlib.h>
 #include <string.h>
 
-int height = 5 , width = 10 , steps = 3 ;
+int height = 5 , width = 10 , steps = 10 ;
 int plants = 10 , herbs = 4 , carns = 2 ;
 
 /* energy values */
@@ -86,16 +86,16 @@ void init_world(void)
     {
       j = random_range(0 , height);
       k = random_range(0 , width);
-      printf("j = %d\n" , j);
-      printf("k = %d\n" , k);
-      printf("count = %d\n" , count);
+      //printf("j = %d\n" , j);
+      //printf("k = %d\n" , k);
+      //printf("count = %d\n" , count);
       count++ ;
     } while((world[j][k].type != EMPTY) && (count < threshold)) ;
 
     if(world[j][k].type == EMPTY)
     {
       world[j][k].type = PLANT ;
-      world[j][k].energy = 1 ;
+      world[j][k].energy = pt ;
     }
   } /* for(i = 0 ; i < plants ; i++) */
 
@@ -237,7 +237,15 @@ void update_herbs(void)
         r = random_range(0 , 8) ;
         for(k = 0 ; k < 8 ; k++ , r = (r + 1) % 8)
 	{
-
+          ni = (i + neighs[r][0] + height) % height ;
+          nj = (j + neighs[r][1] + width) % width ;
+	}
+        if(world[ni][nj].type == EMPTY)
+	{
+          world[ni][nj] = world[i][j] ;
+          world[i][j].type = EMPTY ;
+          world[i][j].energy = 0 ;
+          break ;
 	}
       }
 
@@ -245,6 +253,81 @@ void update_herbs(void)
   } /* for(i = 0 ; i < height ;  */ 
 }
 
+void update_carns(void)
+{
+  int i , j , ni , nj , k , r , found ;
+
+  for(i = 0 ; i < height ; i++)
+  {
+    for(j = 0 ; j < width ; j++)
+    {
+      if(world[i][j].type != CARN) continue;
+
+      world[i][j].energy -= cc ;
+      if(world[i][j].energy <= 0)
+      {
+        world[i][j].type = EMPTY ;
+        world[i][j].energy = 0 ;
+        break ;
+      }
+
+      found = 0 ;
+      r = random_range(0 , 8) ;
+      for(k = 0 ; k < 8 ; k++ , r = (r + 1) % 8)
+      {
+        ni = (i + neighs[r][0] + height) % height ;
+        nj = (j + neighs[r][1] + width) % width ;
+        if(world[ni][nj].type == HERB)
+	{
+          found = 1 ;
+          break ;
+	} 
+      }
+
+      if(found)
+      {
+        world[ni][nj].type = CARN ;
+        world[ni][nj].energy = world[i][j].energy + eh ;
+        /* make a baby if possible  */
+        if(world[ni][nj].energy > ec)
+        {
+          world[ni][nj].energy /= 2 ;
+          world[i][j] = world[ni][nj] ;
+	}
+        else
+	{
+          world[i][j].type = EMPTY ;
+          world[i][j].energy = 0 ;
+	}
+      } /* if(found)  */
+      else /* no found , just move a random no-herb loaction .  */
+      {
+        r = random_range(0 , 8) ;
+        for(k = 0 ; k < 8 ; k++ , r = (r + 1) % 8)
+	{
+          ni = (i + neighs[r][0] + height) % height ;
+          nj = (j + neighs[r][1] + width) % width ;
+          /* */
+          if(world[ni][nj].type == EMPTY || world[ni][nj].type == PLANT)
+	  {
+            found = world[ni][nj].type ;
+            world[ni][nj] = world[i][j] ;
+            world[i][j].type = found ;
+
+            if(found == EMPTY)
+	    {
+              world[i][j].energy = 0 ;
+	    }
+            break ;
+	  }
+
+	} /* for(k = 0 ; k < 8 ;   */
+      }
+
+
+    } /* for(j = 0 ; j < width ; j++)  */
+  } /* for(i = 0 ; i < width ; i++)  */
+}
 
 void whilecount(void)
 {
@@ -295,7 +378,8 @@ void random_wheel(int spos)
 int main(int argc , char *argv[])
 {
   int arglen , argnum , count ;
-  //init_world();
+  int t , i , j ;
+
   //whilecount();
 
   arglen = argnum = argc - 1 ;
@@ -331,6 +415,31 @@ int main(int argc , char *argv[])
      the function is not support in C standard library .
     */
   //printf("%s\n" , itoa(count));
+
+  init_world();
+
+  for(t = 0 ; t < steps ; t++)
+  {
+    plants = herbs = carns = 0 ;
+
+    for(i = 0 ; i < height ; i++)
+    {
+      for(j = 0 ; j < width ; j++)
+      {
+        if(world[i][j].type == PLANT) plants++ ;
+        else if(world[i][j].type == HERB) herbs++ ;
+        else if(world[i][j].type == CARN) carns++ ;
+
+      } /* for(j = 0 ; j < width ; j++)  */
+    } /* for(i = 0 ; i < height ; i++)  */
+
+    printf("%d , %d , %d\n" , plants , herbs , carns);
+
+    update_plants();
+    update_herbs();
+    update_carns();
+
+  } /* for(t = 0 ; t < steps ; t++)  */
 
   printf("gsw!\n");
   exit(1);
