@@ -7,7 +7,7 @@ simulating a ecosystem . Maybe it can be called chaos theory . Who knows !
 #include <stdlib.h>
 #include <string.h>
 
-int height = 5 , width = 10 , steps = 10 ;
+int height = 5 , width = 10 , steps = 20 ;
 int plants = 10 , herbs = 4 , carns = 2 ;
 
 /* energy values */
@@ -60,10 +60,10 @@ void init_world(void)
   int count , threshold ;
 
   world = malloc(sizeof(cell *) * height) ;
-  for(i = 0 ; i < 4 ; i++)
+  for(i = 0 ; i < height ; i++)
   {
     world[i] = malloc(sizeof(cell) * width) ;
-    for(j = 0 ; j < 4 ; j++)
+    for(j = 0 ; j < width ; j++)
     {
       world[i][j].type = EMPTY;
       world[i][j].mark = 0;
@@ -80,7 +80,7 @@ void init_world(void)
 
   for(i = 0 ; i < plants ; i++)
   {
-    printf("i = %d\n" , i);
+    //printf("i = %d\n" , i);
     count = 0 ;
     do
     {
@@ -98,6 +98,8 @@ void init_world(void)
       world[j][k].energy = pt ;
     }
   } /* for(i = 0 ; i < plants ; i++) */
+
+  printf("s1\n");
 
   /* add herbs */
   for(i = 0 ; i < herbs ; i++)
@@ -329,6 +331,29 @@ void update_carns(void)
   } /* for(i = 0 ; i < width ; i++)  */
 }
 
+void plot(void)
+{
+  int i , j ;
+
+  for(i = 0 ; i < height ; i++)
+  {
+    for(j = 0 ; j < width ; j++)
+    {
+      if(world[i][j].type == EMPTY)
+        printf(" ");
+      else if(world[i][j].type == PLANT)
+        printf("#");
+      else if(world[i][j].type == HERB)
+        printf("&");
+      else if(world[i][j].type == CARN)
+        printf("@");
+    } /* for(j = 0 ; j < width ; j++)  */
+
+    printf("\n");
+  } /* for(i = 0 ; i < height ; i++)   */
+
+}
+
 void whilecount(void)
 {
   int count = 0 ;
@@ -416,6 +441,21 @@ int main(int argc , char *argv[])
     */
   //printf("%s\n" , itoa(count));
 
+  if(argnum == 7 && strncmp(argv[1] , "set" , 3) == 0)
+  {
+    steps = atoi(argv[2]) ;
+    height = atoi(argv[3]) ;
+    width = atoi(argv[4]) ;
+    plants = atoi(argv[5]) ;
+    herbs = atoi(argv[6]) ;
+    carns = atoi(argv[7]) ;
+  }
+
+  if(argnum == 2 && strncmp(argv[1] , "steps" , 5) == 0)
+  {
+    steps = atoi(argv[2]) ;
+  }
+
   init_world();
 
   for(t = 0 ; t < steps ; t++)
@@ -433,6 +473,7 @@ int main(int argc , char *argv[])
       } /* for(j = 0 ; j < width ; j++)  */
     } /* for(i = 0 ; i < height ; i++)  */
 
+    plot();
     printf("%d , %d , %d\n" , plants , herbs , carns);
 
     update_plants();
