@@ -456,6 +456,13 @@ int main(int argc , char *argv[])
     steps = atoi(argv[2]) ;
   }
 
+  // 2016.07.06
+  if(argnum == 1 && strncmp(argv[1] , "help" , 4) == 0)
+  {
+    printf("set steps height width plants herbs carns\n");
+    exit(1);
+  }
+
   init_world();
 
   for(t = 0 ; t < steps ; t++)
