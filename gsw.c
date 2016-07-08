@@ -10,6 +10,8 @@ simulating a ecosystem . Maybe it can be called chaos theory . Who knows !
 int height = 5 , width = 10 , steps = 20 ;
 int plants = 10 , herbs = 4 , carns = 2 ;
 
+int plotting = 0 ;
+
 /* energy values */
 int ep = 15 , eh = 50 , ec = 200 ;
 /* energy cost range of herbs and carns , and energy boundary of plants . */
@@ -43,6 +45,22 @@ int neighs[8][2] = {
   {0 , -1 } ,            { 0 , 1} ,
   {1 , -1 } , { 1 , 0} , { 1 , 1} 
 };
+
+typedef struct OPTION
+{
+  char *name ;
+  void *ptr ; 
+} OPTION ;
+
+  OPTION options[] = {
+    { "-steps"  , &steps  } ,
+    { "-height" , &height } ,
+    { "-width"  , &width  } ,
+    { "-plants" , &plants } ,
+    { "-herbs"  , &herbs  } ,
+    { "-carns"  , &carns  } ,
+    { "-plotting" , &plotting }
+  } ;
 
 int random_range(int min , int max)
 {
@@ -525,6 +543,7 @@ int main(int argc , char *argv[])
 {
   int arglen , argnum , count ;
   int t , i , j ;
+  int a , b , found ;
 
   //whilecount();
 
@@ -584,6 +603,30 @@ int main(int argc , char *argv[])
     exit(1);
   }
 
+  // 2016.07.08
+  a = 1 ;
+  while(a < argc)
+  {
+    found = 0 , b = 0 ; 
+    while((!found) && b <= 2)
+    {
+      if(strcmp(argv[a] , options[b].name) == 0)
+      {
+        found = 1 ;
+        *(int *)options[b].ptr = atoi(argv[a + 1]) ;
+        a += 2 ;
+        break ;
+      }
+
+      b++ ;
+
+    } /* while(!found)  */
+    
+    if(!found) 
+      a++ ;
+
+  } /* while(a < argc)  */
+
   init_world();
 
   for(t = 0 ; t < steps ; t++)
@@ -601,8 +644,14 @@ int main(int argc , char *argv[])
       } /* for(j = 0 ; j < width ; j++)  */
     } /* for(i = 0 ; i < height ; i++)  */
 
-    // plot mode : plot();
-    plot_curve();
+    // plotting mode :
+    printf("plot=%d" , plotting) ;
+
+    if(plotting == 1)
+      plot();
+    else
+      plot_curve();
+
     //printf("%d , %d , %d\n" , plants , herbs , carns);
 
     update_plants();
