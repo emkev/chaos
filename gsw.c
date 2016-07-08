@@ -354,6 +354,127 @@ void plot(void)
 
 }
 
+/* 2016.07.07 */
+void plot_curve(void)
+{
+  int a , points_num = 3 ;
+  int i , j , tmpnum = 0 ;
+  char tmpname ;
+  char min , mid , max ;
+  int **points ;
+
+  points = malloc(sizeof(int *) * 2) ;
+  points[0] = malloc(sizeof(char) * 3) ;
+  points[1] = malloc(sizeof(int) * 3) ;
+
+  points[0][0] = 'p' ;
+  points[1][0] = plants ;
+  points[0][1] = 'h' ;
+  points[1][1] = herbs ;
+  points[0][2] = 'c' ;
+  points[1][2] = carns ;
+
+  //printf("points[0][2] = %c\n" , points[0][2]);
+  //printf("points[1][2] = %d\n" , points[1][2]);
+
+  /* order "plants and herbs and carns" . 
+     Don't forget to test the ordering algorithm .
+   */
+  a = points_num - 1 ;
+  while(a > 0)
+  {
+    for(i = 0 ; i < a ; i++)
+    {
+      if(points[1][i] > points[1][i + 1])
+      {
+        tmpname = points[0][i] ;
+        tmpnum  = points[1][i] ;
+        points[0][i] = points[0][i + 1] ;
+        points[1][i] = points[1][i + 1] ;
+        points[0][i + 1] = tmpname ;
+        points[1][i + 1] = tmpnum ; 
+      }
+
+    } /* for(i = 0 ; i < a ;   */
+
+    a-- ;
+
+  } /* while(a > 0)  */
+
+  //printf("points[1][0] = %d\n" , points[1][0]);
+  //printf("points[1][1] = %d\n" , points[1][1]);
+  //printf("points[1][2] = %d\n" , points[1][2]);
+
+  /* thinking :
+
+  for(i = 0 ; i < max ; i++)
+  {
+    while(i < min)
+    {
+
+    }
+  }
+
+  while(i < min)
+  {
+    printf(" ");
+    i++ ;
+  }
+  printf("%c" , min);
+
+  while(i < mid)
+  {
+    printf(" ");
+    i++ ;
+  }
+  printf("%c" , mid);
+
+  while(i < max)
+  {
+    printf(" ");
+    i++ ;
+  }
+  printf("%c" , max);
+  */
+
+  // way 2
+  j = 0 ;
+  /* make sure clearing all 0 value points  */
+  while(j <= points_num - 1 && points[1][j] == 0)
+  {
+    j++ ;
+  }
+
+  i = 1 ;
+  while((j <= points_num - 1)
+        && (i <= points[1][points_num - 1]) 
+        && (points[1][j] > 0))
+  {
+    if(i != points[1][j])
+    {
+      printf(" ");
+    }
+    else
+    {
+      if(points[0][j] == 'p')
+        printf("#");
+      else if(points[0][j] == 'h')
+        printf("&");
+      else if(points[0][j] == 'c')
+        printf("@");
+
+      j++ ;
+
+    } /* else  */
+    
+    i++ ;
+
+  } /* while(i <= points[1][2])  */
+
+  printf("\n");
+
+}
+
 void whilecount(void)
 {
   int count = 0 ;
@@ -480,8 +601,9 @@ int main(int argc , char *argv[])
       } /* for(j = 0 ; j < width ; j++)  */
     } /* for(i = 0 ; i < height ; i++)  */
 
-    plot();
-    printf("%d , %d , %d\n" , plants , herbs , carns);
+    // plot mode : plot();
+    plot_curve();
+    //printf("%d , %d , %d\n" , plants , herbs , carns);
 
     update_plants();
     update_herbs();
