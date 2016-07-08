@@ -9,8 +9,9 @@ simulating a ecosystem . Maybe it can be called chaos theory . Who knows !
 
 int height = 5 , width = 10 , steps = 20 ;
 int plants = 10 , herbs = 4 , carns = 2 ;
-
 int plotting = 0 ;
+
+int option_length = 7 ;
 
 /* energy values */
 int ep = 15 , eh = 50 , ec = 200 ;
@@ -70,6 +71,20 @@ int random_range(int min , int max)
 
   return a ;
 }
+
+/*
+int array_length(void)
+{
+  int i = 0 ;
+
+  while(options[i]   ... )
+  {
+    i++ ;
+  }
+
+  return i ;
+}
+*/
 
 /* init plants , herbs , and carns */
 void init_world(void)
@@ -608,7 +623,7 @@ int main(int argc , char *argv[])
   while(a < argc)
   {
     found = 0 , b = 0 ; 
-    while((!found) && b <= 2)
+    while((!found) && b <= option_length - 1)
     {
       if(strcmp(argv[a] , options[b].name) == 0)
       {
@@ -644,9 +659,7 @@ int main(int argc , char *argv[])
       } /* for(j = 0 ; j < width ; j++)  */
     } /* for(i = 0 ; i < height ; i++)  */
 
-    // plotting mode :
-    printf("plot=%d" , plotting) ;
-
+    // plotting mode and curve mode
     if(plotting == 1)
       plot();
     else
