@@ -6,6 +6,7 @@ simulating a ecosystem . Maybe it can be called chaos theory . Who knows !
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
 int height = 5 , width = 10 , steps = 20 ;
 int plants = 10 , herbs = 4 , carns = 2 ;
@@ -67,7 +68,7 @@ int random_range(int min , int max)
 {
   int a ;
   
-  a = random() % (max - min) ;
+  a = rand() % (max - min) + min ;
 
   return a ;
 }
@@ -561,6 +562,8 @@ int main(int argc , char *argv[])
   int a , b , found ;
 
   //whilecount();
+
+  srand((unsigned)time(NULL));
 
   arglen = argnum = argc - 1 ;
   count = 1 ;
